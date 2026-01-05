@@ -138,12 +138,12 @@ Navigation is handled by `go_router`:
 
 ## Firebase Integration
 
-Firebase is integrated but currently commented out in `main.dart`:
+Firebase is integrated and configurable:
 - Firebase Core for initialization
 - Firebase Auth for authentication
 
 To enable Firebase:
-1. Uncomment `await _setupFirebase();` in `main.dart`
+1. Enable Firebase initialization in `main.dart`
 2. Configure Firebase for your platforms (iOS, Android, Web)
 
 ## Assets
