@@ -57,7 +57,9 @@ lib/
 │       └── views/
 ├── shared/                 # Shared UI and constants
 │   ├── app_theme.dart     # App theme configuration
-│   └── endpoints.dart     # API endpoints
+│   ├── endpoints.dart     # API endpoints
+│   └── widgets/          # Reusable UI widgets
+│       └── *.dart         # Shared widget components
 └── main.dart              # App entry point
 ```
 
@@ -65,9 +67,15 @@ lib/
 
 ### 1. **Features Layer**
 Each feature follows the same structure:
-- **Views**: UI components and screens
-- **Cubits**: State management using BLoC pattern
+- **Views**: UI components and screens (UI only, no business logic)
+- **Cubits**: State management using BLoC pattern (business logic)
 - **Repositories**: Data access and business logic
+
+**Critical Separation Rule**:
+- **Views** should ONLY contain UI code and delegate all business logic to Cubits
+- **Cubits** handle all business logic, state management, and orchestration
+- **Repositories** handle data operations and API calls
+- Never mix business logic directly in UI widgets
 
 ### 2. **Core Layer**
 - **API**: Dio-based HTTP client for API communication
@@ -76,9 +84,15 @@ Each feature follows the same structure:
 - **Router**: Navigation configuration using go_router
 
 ### 3. **Shared Layer**
-- Common UI components
+- **Widgets**: Reusable UI components that can be used across features
+- **Utilities**: Reusable functions and helpers
 - Theme configuration
 - Constants (endpoints, etc.)
+
+**Reusability Principle**: 
+- If a widget or function is used in 2+ places, it MUST be moved to `shared/widgets/` or `shared/utils/`
+- Create new files in the shared layer when components/functions are reusable
+- Never duplicate widget or function code - always extract and reuse
 
 ## Development Workflow
 
@@ -126,6 +140,7 @@ The project uses **BLoC/Cubit** pattern:
 3. **View**: Displays UI and reacts to state changes
 
 Example flow:
+
 ```
 View → Cubit → Repository → API → Repository → Cubit → View
 ```
@@ -182,6 +197,10 @@ The project supports:
 4. **Code Generation**: Use build_runner for boilerplate
 5. **Clean Architecture**: Separate concerns (UI, business logic, data)
 6. **BLoC Pattern**: Predictable state management
+7. **DRY Principle**: Never duplicate code - always extract and reuse
+8. **Separation of Concerns**: Business logic in Cubits/Repositories, UI in Views
+9. **Reusability First**: Create shared widgets/utils before duplicating code
+10. **File Organization**: Create new files when extracting reusable components
 
 ## Getting Started
 
@@ -200,6 +219,7 @@ The project supports:
 
 ## Notes for AI Agents
 
+### Code Generation & Structure
 - Always run code generation after modifying models or creating new ones
 - Follow the existing feature structure when adding new features
 - Use the Makefile for feature generation when possible
