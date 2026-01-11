@@ -1,0 +1,13 @@
+---
+alwaysApply: true
+---
+# API calls
+
+- We are using Rest API as our backend service.
+- After doing the api call always handle the error case by showing snackbar. No need to show snackbar for success unless its mentioned specifically.
+- While loading, show proper state for eg: loading indicator while loading data. Button disabled while processing etc.
+- For error handling use AppException
+- always use listenWhen, eg: (previous, current) =>
+            previous.signupResult != current.signupResult,
+- create separate function for listener and listenWhen
+- add logging in cubit for api calls (start, success, failure)

@@ -1,0 +1,64 @@
+---
+alwaysApply: false
+---
+# Strict Rules for Generating New Features
+
+## 1. Scaffolding Command
+
+**Always** use the Makefile to generate the feature structure. Do not manually create folders unless the command fails.
+
+```bash
+make generate_feature \
+  feature=featureName \
+  repository=repositoryName \
+  view=viewName \
+  cubit=cubitName
+```
+
+## 2. File Structure
+
+Ensure the feature is created in `lib/features/<featureName>/` with these three subdirectories:
+
+* **`views/`**: UI components only.
+* **`cubits/`**: State management (BLoC pattern).
+* **`repositories/`**: Data access and business logic.
+
+## 4. Integration Steps
+
+After scaffolding, you must:
+
+1. **Routing**:
+   * Add a static `routeName` property to your view class (e.g., `static String routeName = '/featureName';`)
+   * Add the route configuration to `core/router/routes.dart`. Example:
+
+   ```dart
+   GoRoute(
+     path: '/onboarding',
+     name: OnboardingView.routeName,
+     builder: (context, state) => const OnboardingView(),
+   ),
+   ```
+
+2. **Global Providers**: Register the new feature's cubit and repository in the global providers:
+
+   * **`global_cubit_provider.dart`**:
+     * Add import: `import 'package:paybat/features/<featureName>/cubits/<cubitName>.dart';`
+     * Add to providers list: `BlocProvider(create: (context) => <CubitName>(context.read()))`
+
+   * **`global_repository_provider.dart`**:
+     * Add import: `import 'package:paybat/features/<featureName>/repositories/<repositoryName>.dart';`
+     * Add to providers list: `RepositoryProvider(create: (context) => <RepositoryName>(context.read()))`
+
+   Example for a feature named "dashboard":
+
+   ```dart
+   // In global_cubit_provider.dart
+   import 'package:paybat/features/dashboard/cubits/dashboard_cubit.dart';
+   // In providers list:
+   BlocProvider(create: (context) => DashboardCubit(context.read()))
+
+   // In global_repository_provider.dart
+   import 'package:paybat/features/dashboard/repositories/dashboard_repository.dart';
+   // In providers list:
+   RepositoryProvider(create: (context) => DashboardRepository(context.read()))
+   ```

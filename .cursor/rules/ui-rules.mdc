@@ -1,0 +1,33 @@
+---
+alwaysApply: false
+---
+# Rules for UI
+
+## 1. Separation of Concerns
+
+* Always use CustomScaffold for new screen.
+* **UI Only:** Views must contain **zero** business logic.
+* **Delegate:** All logic, state transitions, and data orchestration must be delegated to **Cubits**.
+* **No Direct Data Access:** Views never call Repositories or APIs directly.
+
+## 2. The Reusability Principle (DRY)
+
+* **2+ Rule:** If a widget is used in 2 or more places, it **must** be moved to `shared/widgets/`. Do not create functions for widgets, create new stateless widget classes. Widget should be in a separate file.
+* **No Duplication:** Never copy-paste widget code. Extract it into a new file in the shared layer instead.
+* **Atomic Design:** Break complex screens into smaller, reusable private widgets within the same file, or public widgets in `shared/` if applicable.
+
+## 5. Styling & Assets
+
+* **Centralized Theme:** Use `shared/` for colors and other styling. Avoid hardcoded hex codes in views.
+* **Asset Pathing:** Reference images from `generated/assets.gen.dart/` as configured in the project.
+
+## 6. Additional when there is api call
+
+* After doing the api call always handle the error case by showing snackbar. No need to show snackbar for success unless its mentioned specifically.
+* While loading, show proper state for eg: loading indicator while loading data. Button disabled while processing etc.
+* For error handling use AppException
+* always use listenWhen, eg: (previous, current) =>
+            previous.signupResult != current.signupResult,
+* create separate function for listener and listenWhen
+* add logging in cubit for api calls (start, success, failure)
+* use enums for firebase error: FirebaseErrorKey

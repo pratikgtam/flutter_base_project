@@ -15,8 +15,6 @@ This is a Flutter base project template designed for building scalable mobile ap
 - **HTTP Client**: dio (^5.9.0)
 
 ### Key Dependencies
-- `firebase_auth` (^6.1.2) - Firebase authentication
-- `firebase_core` (^4.2.1) - Firebase core functionality
 - `freezed` (^2.4.6) - Code generation for immutable classes
 - `json_serializable` (^6.7.1) - JSON serialization
 - `build_runner` (^2.4.7) - Code generation tool
@@ -125,6 +123,31 @@ This will:
 2. Format the code
 3. Run build_runner
 
+### Package Management
+
+When adding a new package to the project, **always use the command line** instead of manually editing `pubspec.yaml`:
+
+```bash
+# Add a regular dependency (uses latest version by default)
+flutter pub add package_name
+
+# Add a dev dependency
+flutter pub add --dev package_name
+
+# Add a specific version (only if latest is incompatible)
+flutter pub add package_name:^1.0.0
+```
+
+**Version Selection Rules**:
+- **Always add the latest version** by default (using `flutter pub add package_name` without version constraint)
+- If the latest version is not compatible with the current Flutter/Dart SDK or other dependencies, find and use the **latest compatible version**
+- **Check the command logs/error messages** - when `flutter pub add` fails, the error output often contains helpful information about:
+  - Version constraints and compatibility issues
+  - Suggested version ranges that might work
+  - Dependency conflicts with other packages
+- Use the error logs to identify compatible version ranges, then try progressively older versions within those ranges until a compatible one is found
+- This ensures proper version resolution and automatically updates `pubspec.yaml` and `pubspec.lock`
+
 ### Environment Setup
 
 1. Copy `.env.example` to `.env` and configure your environment variables
@@ -166,12 +189,6 @@ To enable Firebase:
 Assets are configured in `pubspec.yaml`:
 - Images: `assets/images/`
 
-## Testing
-
-Tests are located in the `test/` directory. Run tests with:
-```bash
-flutter test
-```
 
 ## Linting
 
@@ -184,10 +201,6 @@ The project uses `flutter_lints` (^6.0.0) for code quality:
 The project supports:
 - Android
 - iOS
-- Web
-- Linux
-- macOS
-- Windows
 
 ## Best Practices
 
@@ -201,14 +214,6 @@ The project supports:
 8. **Separation of Concerns**: Business logic in Cubits/Repositories, UI in Views
 9. **Reusability First**: Create shared widgets/utils before duplicating code
 10. **File Organization**: Create new files when extracting reusable components
-
-## Getting Started
-
-1. Clone the repository
-2. Copy `.env.example` to `.env`
-3. Run `flutter pub get`
-4. Run `flutter pub run build_runner build` (if needed)
-5. Run `flutter run` to start the app
 
 ## Additional Resources
 

@@ -1,0 +1,201 @@
+---
+description: This is helpful while doing code refactor, looking overall project and code. This is useful for end to end implementation
+alwaysApply: false
+---
+# Flutter Project - Standard Rules
+
+**IMPORTANT**: Always reference `agent.md` for complete project guidelines. This file contains the authoritative project documentation.
+
+## 1. Scaffolding Command
+
+**Always** use the Makefile to generate the feature structure. Do not manually create folders unless the command fails.
+
+```bash
+make generate_feature \
+  feature=featureName \
+  repository=repositoryName \
+  view=viewName \
+  cubit=cubitName
+```
+
+## 2. File Structure
+
+Ensure the feature is created in `lib/features/<featureName>/` with these three subdirectories:
+
+* **`views/`**: UI components only.
+* **`cubits/`**: State management (BLoC pattern).
+* **`repositories/`**: Data access and business logic.
+
+## 4. Integration Steps
+
+After scaffolding, you must:
+
+1. **Routing**:
+   * Add a static `routeName` property to your view class (e.g., `static String routeName = '/featureName';`)
+   * Add the route configuration to `core/router/routes.dart`. Example:
+
+   ```dart
+   GoRoute(
+     path: '/onboarding',
+     name: OnboardingView.routeName,
+     builder: (context, state) => const OnboardingView(),
+   ),
+   ```
+
+2. **Global Providers**: Register the new feature's cubit and repository in the global providers:
+
+   * **`global_cubit_provider.dart`**:
+     * Add import: `import 'package:paybat/features/<featureName>/cubits/<cubitName>.dart';`
+     * Add to providers list: `BlocProvider(create: (context) => <CubitName>(context.read()))`
+
+   * **`global_repository_provider.dart`**:
+     * Add import: `import 'package:paybat/features/<featureName>/repositories/<repositoryName>.dart';`
+     * Add to providers list: `RepositoryProvider(create: (context) => <RepositoryName>(context.read()))`
+
+   Example for a feature named "dashboard":
+
+   ```dart
+   // In global_cubit_provider.dart
+   import 'package:paybat/features/dashboard/cubits/dashboard_cubit.dart';
+   // In providers list:
+   BlocProvider(create: (context) => DashboardCubit(context.read()))
+
+   // In global_repository_provider.dart
+   import 'package:paybat/features/dashboard/repositories/dashboard_repository.dart';
+   // In providers list:
+   RepositoryProvider(create: (context) => DashboardRepository(context.read()))
+   ```
+
+## Architecture
+
+### Clean Architecture with Feature-First Organization
+
+* **Features** in `lib/features/` with structure: `cubits/`, `repositories/`, `views/`
+* **Shared code** in `lib/shared/` (widgets, utils, theme, constants)
+* **Core functionality** in `lib/core/` (API, models, router, global providers)
+* **Reusability Principle**: If used in 2+ places, move to `shared/`
+
+### State Management - BLoC/Cubit Pattern
+
+* Use **Cubit** for state management (not BLoC unless complex event handling needed)
+* **Separation of Concerns**:
+  * **Views**: UI only, no business logic
+  * **Cubits**: Business logic and state management
+  * **Repositories**: Data operations and API calls
+* Never mix business logic directly in UI widgets
+
+## API calls
+
+* After doing the api call always handle the error case by showing snackbar. No need to show snackbar for success unless its mentioned specifically.
+* While loading, show proper state for eg: loading indicator while loading data. Button disabled while processing etc.
+* For error handling use AppException
+* always use listenWhen, eg: (previous, current) =>
+            previous.signupResult != current.signupResult,
+* create separate function for listener and listenWhen
+* add logging in cubit for api calls (start, success, failure)
+
+### Flow Pattern
+
+```text
+View → Cubit → Repository → API → Repository → Cubit → View
+```
+
+## Code Organization
+
+### Feature Structure
+
+Each feature follows the same structure:
+
+```text
+feature_name/
+├── cubits/        # State management
+├── repositories/  # Data layer
+└── views/         # UI layer
+```
+
+### File Placement Rules
+
+* **Feature-specific code**: `lib/features/{feature}/`
+* **Reusable widgets**: `lib/shared/widgets/`
+* **Reusable utilities**: `lib/shared/utils/`
+* **Shared models**: `lib/core/models/`
+* **API client**: `lib/core/api/`
+* **Routing**: `lib/core/router/`
+
+## Development Workflow
+
+### Code Generation
+
+* Use **Freezed** for all data models
+* Run `build_runner` after model changes:
+
+  ```bash
+  flutter pub run build_runner build --delete-conflicting-outputs
+  ```
+
+* Generated files: `*.freezed.dart`, `*.g.dart`
+
+### Package Management
+
+* **Always use command line** for adding packages:
+
+  ```bash
+  flutter pub add package_name
+  flutter pub add --dev package_name
+  ```
+
+* **Never manually edit** `pubspec.yaml` for dependencies
+* Use latest version by default, check compatibility if issues arise
+
+### Critical Rules
+
+1. **Feature-first organization** - Group by feature, not by layer
+2. **Immutable models** - Use Freezed for data classes
+3. **Type safety** - Leverage Dart's type system
+4. **Code generation** - Use build_runner for boilerplate
+5. **Clean Architecture** - Separate concerns (UI, business logic, data)
+6. **BLoC/Cubit pattern** - Predictable state management
+7. **DRY principle** - Never duplicate code, always extract and reuse
+8. **Separation of Concerns** - Business logic in Cubits/Repositories, UI in Views
+9. **Reusability first** - Create shared components before duplicating
+10. **File organization** - Create new files when extracting reusable components
+
+### Code Quality
+
+* Use `flutter_lints` for code quality
+* Follow Dart style guide
+* Keep features independent and loosely coupled
+* Use Freezed for all data models
+* Run build_runner after creating/modifying models
+
+## Tech Stack Reference
+
+### Core Technologies
+
+* **Flutter SDK**: ^3.10.1
+* **State Management**: flutter_bloc (^9.1.1) with Cubit pattern
+* **Navigation**: go_router (^17.0.0)
+* **Code Generation**: freezed, json_serializable, build_runner
+
+## Common Tasks
+
+### Adding a New Feature
+
+1. Use Makefile: `make generate_feature feature=name ...`
+2. Or manually create: `lib/features/{feature}/{cubits,repositories,views}/`
+3. Register routes in `core/router/routes.dart`
+4. Add route names in `core/router/route_names.dart`
+
+### Creating a Reusable Widget
+
+1. Check if similar widget exists in `shared/widgets/`
+2. If used in 2+ places, create in `shared/widgets/`
+3. Follow naming convention: `{purpose}_widget.dart`
+
+### Adding a Data Model
+
+1. Create model in appropriate location (feature or core/models)
+2. Use Freezed: `@freezed class ModelName with _$ModelName`
+3. Run: `flutter pub run build_runner build --delete-conflicting-outputs`
+
+For complete details, see: `agent.md`

@@ -1,0 +1,31 @@
+---
+description: Enforces the use of `flutter pub add` for package management in `pubspec.yaml`
+globs: pubspec.yaml
+alwaysApply: false
+---
+
+# Package Management
+
+When adding a new package to the project, **always use the command line** instead of manually editing `pubspec.yaml`:
+
+```bash
+# Add a regular dependency (uses latest version by default)
+flutter pub add package_name
+
+# Add a dev dependency
+flutter pub add --dev package_name
+
+# Add a specific version (only if latest is incompatible)
+flutter pub add package_name:^1.0.0
+```
+
+**Version Selection Rules**:
+
+- **Always add the latest version** by default (using `flutter pub add package_name` without version constraint)
+- If the latest version is not compatible with the current Flutter/Dart SDK or other dependencies, find and use the **latest compatible version**
+- **Check the command logs/error messages** - when `flutter pub add` fails, the error output often contains helpful information about:
+  - Version constraints and compatibility issues
+  - Suggested version ranges that might work
+  - Dependency conflicts with other packages
+- Use the error logs to identify compatible version ranges, then try progressively older versions within those ranges until a compatible one is found
+- This ensures proper version resolution and automatically updates `pubspec.yaml` and `pubspec.lock`
